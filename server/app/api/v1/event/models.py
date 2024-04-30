@@ -1,19 +1,20 @@
 from app.extensions import db, ma
+from sqlalchemy import Column, Integer, DateTime, String, Text, func
+
 
 class Event(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(150))
-    content = db.Column(db.Text)
-    event_date = db.Column(db.DateTime(timezone=True))
-    created_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    title = Column(String(150), nullable=False)
+    content = Column(Text, nullable=False)
+    event_date = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
 
     def __repr__(self):
         return f'<Event "{self.title}">'
 
-
-class EventSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = Event
-
-event_schema = EventSchema()
-event_schemas = EventSchema(many=True)    
+    def __init__(self, title, content, event_date):
+        self.title = title
+        self.content = content
+        self.event_date = event_date
