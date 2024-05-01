@@ -16,7 +16,8 @@ def create():
     title = request.json["title"]
     content = request.json["content"]
     event_date = request.json["event_date"]
-    return create_event(title, content, event_date)
+    contact_email = request.json["contact_email"]
+    return create_event(title, content, event_date, contact_email)
 
 
 @bp.route("/", methods=["GET"])

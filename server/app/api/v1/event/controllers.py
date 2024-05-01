@@ -7,8 +7,8 @@ from sqlalchemy import extract
 from datetime import datetime
 
 
-def create_event(title, content, event_date):
-    new_event = Event(title, content, parse(event_date))
+def create_event(title, content, event_date, contact_email):
+    new_event = Event(title, content, parse(event_date), contact_email)
     db.session.add(new_event)
     db.session.commit()
 

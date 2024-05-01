@@ -10,11 +10,13 @@ class Event(db.Model):
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+    contact_email = Column(String(150), nullable=False)
 
     def __repr__(self):
         return f'<Event "{self.title}">'
 
-    def __init__(self, title, content, event_date):
+    def __init__(self, title, content, event_date, contact_email):
         self.title = title
         self.content = content
         self.event_date = event_date
+        self.contact_email = contact_email

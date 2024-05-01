@@ -1,8 +1,8 @@
-import { Home } from "@/features/Home";
+import { Home } from '@/features/Home'
 
 export const routes = [
-    {
-        path: "/",
-        element: <Home />
-    },
+	{
+		path: '/',
+		element: <Home />,
+	},
 ]
