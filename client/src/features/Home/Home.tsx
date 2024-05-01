@@ -6,10 +6,12 @@ import { CountrySelect } from './components/CountrySelect'
 import { CountryType } from './types'
 import { useHome } from './hooks'
 import {
+	Autocomplete,
 	Box,
 	Button,
 	Card,
 	CardContent,
+	Chip,
 	CircularProgress,
 	FormControl,
 	Paper,
@@ -17,7 +19,12 @@ import {
 	TextField,
 	Typography,
 } from '@mui/material'
-import { TimePicker } from '@mui/x-date-pickers'
+import { useForm } from 'react-hook-form'
+import { useState } from 'react'
+import moment from 'moment'
+import { IconButton } from '@mui/material'
+import { DeleteOutlineRounded } from '@mui/icons-material'
+import { deleteEvent } from './api'
 
 export function Home() {
 	const {
@@ -29,12 +36,26 @@ export function Home() {
 		holidays,
 		selected,
 		setSelected,
+		onSubmit,
+		eventDates,
+		setEvents,
+		setEventDates,
+		emails,
+		inputValue,
+		error,
+		onChange,
+		onDelete,
+		onInputChange,
+		timeError,
+		setTimeError,
 	} = useHome()
 
+	const { register, handleSubmit } = useForm()
 	let footer = <p>Please pick a day.</p>
 	if (selected) {
 		footer = <p>You picked {format(selected, 'PP')}.</p>
 	}
+
 	return (
 		<Box
 			sx={{
@@ -78,7 +99,7 @@ export function Home() {
 							onSelect={setSelected}
 							footer={footer}
 							modifiers={{
-								eventDate: events.map(el => el.event_date),
+								eventDate: eventDates,
 								holidays: holidays.map(el => el.date),
 							}}
 							toYear={2023}
@@ -99,6 +120,8 @@ export function Home() {
 							<Card
 								sx={{
 									flex: 1,
+									maxHeight: '80vh',
+									overflow: 'scroll',
 								}}
 							>
 								<CardContent
@@ -107,35 +130,83 @@ export function Home() {
 										gap: '10px',
 									}}
 								>
-									<FormControl
-										sx={{
+									<form
+										onSubmit={handleSubmit(onSubmit)}
+										style={{
 											display: 'grid',
 											gap: '20px',
 										}}
 									>
 										<TextField
 											variant='outlined'
-											type='email'
-											label='Contact Email'
-											required
-										/>
-										<TextField
-											variant='outlined'
 											type='text'
 											label='Event Title'
 											required
+											{...register('title')}
 										/>
 										<TextField
 											variant='outlined'
 											type='text'
 											label='Event Content'
 											required
+											{...register('content')}
 										/>
-										<TimePicker label='Event Time' />
+										<TextField
+											type='time'
+											required
+											variant='outlined'
+											label='Start Time'
+											{...register('startTime')}
+										/>
+										<TextField
+											type='time'
+											required
+											variant='outlined'
+											label='End Time'
+											{...register('endTime')}
+											error={timeError}
+											onChange={() => setTimeError(false)}
+											helperText={
+												timeError && 'End time cannot less than start time'
+											}
+										/>
+
+										<Autocomplete
+											multiple
+											onChange={onChange}
+											id='tags-filled'
+											options={[]}
+											freeSolo
+											value={emails}
+											inputValue={inputValue}
+											onInputChange={onInputChange}
+											renderTags={(value, getTagProps) =>
+												value.map((option, index) => (
+													<Chip
+														variant='outlined'
+														label={option}
+														{...getTagProps({ index })}
+														onDelete={() => onDelete(option)}
+													/>
+												))
+											}
+											renderInput={params => (
+												<TextField
+													type='email'
+													{...params}
+													label='Participant Emails'
+													error={error}
+													helperText={
+														error && 'Please enter a valid email address'
+													}
+													// required
+												/>
+											)}
+										/>
 										<Button type='submit' variant='contained'>
 											Submit
 										</Button>
-									</FormControl>
+									</form>
 
 									{events.length == 0 ? (
 										<Typography>No Events Listes Yet</Typography>
@@ -143,9 +214,50 @@ export function Home() {
 										<>
 											<Typography variant='h5'>List of Events:</Typography>
 											{events.map(el => (
-												<Paper elevation={3}>
-													<Typography variant='h6'>{el.title}</Typography>
-													<Typography variant='body2'>{el.content}</Typography>
+												<Paper
+													elevation={3}
+													sx={{
+														padding: '10px 20px',
+													}}
+												>
+													<Box sx={{ position: 'relative' }}>
+														<IconButton
+															sx={{
+																position: 'absolute',
+																right: '0px',
+																top: '0px',
+															}}
+															onClick={async () => {
+																try {
+																	await deleteEvent({ id: el.id })
+																	setEvents(prev =>
+																		prev.filter(val => val.id != el.id),
+																	)
+																	setEventDates(prev =>
+																		prev.filter(val => val == el.start_date),
+																	)
+																} catch (e) {
+																	console.log(e)
+																}
+															}}
+														>
+															<DeleteOutlineRounded />
+														</IconButton>
+														<Typography variant='h6'>{el.title}</Typography>
+														<Typography variant='body2'>
+															{el.content}
+														</Typography>
+														<Typography variant='body2'>
+															Time:{' '}
+															{moment(el.start_date).format('hh:mm') +
+																' - ' +
+																moment(el.end_date).format('hh:mm')}
+														</Typography>
+
+														{el.participants_email.map(val => (
+															<Typography variant='body2'>{val}</Typography>
+														))}
+													</Box>
 												</Paper>
 											))}
 										</>
@@ -164,7 +276,7 @@ export function Home() {
 															padding: '10px 20px',
 														}}
 													>
-														<Typography variant='h6'>{val.name}</Typography>
+														<Typography variant='body2'>{val.name}</Typography>
 													</Paper>
 												))}
 										</>

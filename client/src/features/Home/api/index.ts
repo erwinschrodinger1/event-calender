@@ -34,20 +34,23 @@ export const getHolidays = async ({
 export const createEvent = async ({
 	title,
 	content,
-	contactEmail,
-	eventDate,
+	startTime,
+	endTime,
+	participantEmail,
 }: {
 	title: string
 	content: string
-	contactEmail: string
-	eventDate: Date
+	startTime: Date
+	endTime: Date
+	participantEmail: string[]
 }) => {
 	return api
 		.post(`v1/event/create`, {
 			title,
 			content,
-			event_date: eventDate,
-			contact_email: contactEmail,
+			start_date: startTime,
+			end_date: endTime,
+			participants_email: participantEmail,
 		})
 		.then(res => {
 			return res.data
@@ -67,7 +70,7 @@ export const getEventDates = async ({
 	return api
 		.get(`v1/event?year=${year}&month=${month}`)
 		.then(res => {
-			return res.data
+			return res.data.map(el => new Date(el))
 		})
 		.catch(err => {
 			throw err
@@ -84,7 +87,18 @@ export const getEventDetail = async ({
 	day: number
 }) => {
 	return api
-		.get(`v1/event?year=${year}&month=${month}&day=${day}`)
+		.get(`/v1/event/detail?year=${year}&month=${month}&day=${day}`)
+		.then(res => {
+			return res.data
+		})
+		.catch(err => {
+			throw err
+		})
+}
+
+export const deleteEvent = async ({ id }: { id: number }) => {
+	return api
+		.delete(`/v1/event/${id}`)
 		.then(res => {
 			return res.data
 		})

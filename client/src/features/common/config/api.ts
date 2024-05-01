@@ -1,10 +1,10 @@
 import axios from 'axios'
 
-const apiUrl = import.meta.env.API_URL
+const apiUrl = import.meta.env.VITE_API_URL
 const holidayApiKey = import.meta.env.VITE_HOLIDAY_API_KEY
 
 export const api = axios.create({
-	baseURL: `${apiUrl}/api`,
+	baseURL: `${apiUrl}/api/`,
 })
 
 export const holidayApi = axios.create({

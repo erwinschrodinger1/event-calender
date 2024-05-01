@@ -6,8 +6,11 @@ export interface CountryType {
 }
 
 export interface EventResponse {
+	id: number
+	participants_email: string[]
 	title: string
 	content: string
-	event_date: Date
+	start_date: Date
+	end_date: Date
 	created_at: Date
 }

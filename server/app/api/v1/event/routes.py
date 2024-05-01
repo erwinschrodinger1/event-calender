@@ -4,7 +4,7 @@ from app.api.v1.event import bp
 from app.api.v1.event.models import Event
 from .schema import event_schema, get_schema, get_detail_schema
 import json
-from .controllers import create_event, get_event_dates, get_event_detail
+from .controllers import create_event, delete_event, get_event_dates, get_event_detail
 
 
 @bp.route("/create", methods=["POST"])
@@ -15,9 +15,10 @@ def create():
 
     title = request.json["title"]
     content = request.json["content"]
-    event_date = request.json["event_date"]
-    contact_email = request.json["contact_email"]
-    return create_event(title, content, event_date, contact_email)
+    start_date = request.json["start_date"]
+    end_date = request.json["end_date"]
+    participants_email = request.json["participants_email"]
+    return create_event(title, content, start_date, end_date, participants_email)
 
 
 @bp.route("/", methods=["GET"])
@@ -41,3 +42,8 @@ def get_detail():
     month = int(request.args.get("month"))
     day = int(request.args.get("day"))
     return get_event_detail(year, month, day)
+
+
+@bp.route("/<int:id>", methods=["DELETE"])
+def delete(id):
+    return delete_event(id)

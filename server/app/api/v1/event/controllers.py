@@ -7,8 +7,10 @@ from sqlalchemy import extract
 from datetime import datetime
 
 
-def create_event(title, content, event_date, contact_email):
-    new_event = Event(title, content, parse(event_date), contact_email)
+def create_event(title, content, start_date, end_date, participants_email):
+    new_event = Event(
+        title, content, parse(start_date), parse(end_date), participants_email
+    )
     db.session.add(new_event)
     db.session.commit()
 
@@ -17,18 +19,28 @@ def create_event(title, content, event_date, contact_email):
 
 def get_event_dates(year, month):
     result = Event.query.filter(
-        extract("year", Event.event_date) == year,
-        extract("month", Event.event_date) == month,
+        extract("year", Event.start_date) == year,
+        extract("month", Event.start_date) == month,
     ).all()
 
-    return [event.event_date for event in result]
+    return [event.start_date for event in result]
 
 
 def get_event_detail(year, month, day):
     result = Event.query.filter(
-        extract("year", Event.event_date) == year,
-        extract("month", Event.event_date) == month,
-        extract("day", Event.event_date) == day,
+        extract("year", Event.start_date) == year,
+        extract("month", Event.start_date) == month,
+        extract("day", Event.start_date) == day,
     ).all()
 
     return event_schemas.jsonify(result)
+
+
+def delete_event(id):
+    event = Event.query.filter_by(id=id).first()
+    if event:
+        db.session.delete(event)
+        db.session.commit()
+        return "Event Deleted"
+    else:
+        return "Event Id Doesnot exist"

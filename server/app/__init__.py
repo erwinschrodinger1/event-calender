@@ -8,6 +8,10 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    from flask_cors import CORS
+
+    CORS(app)
+
     # Extensions
     db.init_app(app)
     ma.init_app(app)
