@@ -16,6 +16,9 @@ def create_app(config_class=Config):
     db.init_app(app)
     ma.init_app(app)
 
+    with app.app_context():
+        db.create_all()
+
     # Blueprints
     from app.main import bp as main_bp
 
@@ -28,8 +31,5 @@ def create_app(config_class=Config):
     @app.route("/test/")
     def test_page():
         return "<h1>Testing the Flask Application</h1>"
-
-    with app.app_context():
-        db.create_all()
 
     return app

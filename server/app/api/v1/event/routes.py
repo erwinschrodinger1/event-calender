@@ -17,6 +17,7 @@ from .controllers import (
     get_event_detail,
     update_event,
 )
+from app.extensions import send_notifications
 
 
 @bp.route("/create", methods=["POST"])
@@ -36,6 +37,7 @@ def create():
 
 @bp.route("/", methods=["GET"])
 def get_date():
+    send_notifications()
     errors = get_schema.validate(request.args)
     if errors:
         return Response(json.dumps(errors), BAD_REQUEST)

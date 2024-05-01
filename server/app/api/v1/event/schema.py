@@ -1,7 +1,7 @@
 from operator import and_, or_
 from flask import jsonify
 from app.extensions import ma
-from marshmallow import ValidationError, fields
+from marshmallow import ValidationError, fields, validates_schema
 from .models import Event
 from dateutil.parser import parse
 
@@ -10,7 +10,8 @@ class EventSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Event
 
-    def validate(self, data, **kwargs):
+    @validates_schema
+    def validate_dates(self, data, **kwargs):
         start_date = data.get("start_date")
         end_date = data.get("end_date")
         if start_date and end_date:
