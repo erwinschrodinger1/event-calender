@@ -45,7 +45,7 @@ export const useHome = () => {
 		}
 		try {
 			updateEvents()
-			// updateHolidays()
+			updateHolidays()
 		} catch (err) {
 			console.log(err)
 		}

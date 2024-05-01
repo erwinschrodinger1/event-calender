@@ -37,7 +37,6 @@ def create():
 
 @bp.route("/", methods=["GET"])
 def get_date():
-    send_notifications()
     errors = get_schema.validate(request.args)
     if errors:
         return Response(json.dumps(errors), BAD_REQUEST)
