@@ -4,13 +4,20 @@ from app.api.v1.event import bp
 from app.api.v1.event.models import Event
 from .schema import event_schema, get_schema, get_detail_schema
 import json
-from .controllers import create_event, delete_event, get_event_dates, get_event_detail
+from .controllers import (
+    create_event,
+    delete_event,
+    get_event_dates,
+    get_event_detail,
+    update_event,
+)
 
 
 @bp.route("/create", methods=["POST"])
 def create():
     errors = event_schema.validate(request.json)
     if errors:
+        print("Validation here")
         return Response(json.dumps(errors), BAD_REQUEST)
 
     title = request.json["title"]
@@ -47,3 +54,17 @@ def get_detail():
 @bp.route("/<int:id>", methods=["DELETE"])
 def delete(id):
     return delete_event(id)
+
+
+@bp.route("/<int:id>", methods=["PATCH"])
+def update(id):
+    errors = event_schema.validate(request.json)
+    if errors:
+        return Response(json.dumps(errors), BAD_REQUEST)
+
+    title = request.json["title"]
+    content = request.json["content"]
+    start_date = request.json["start_date"]
+    end_date = request.json["end_date"]
+    participants_email = request.json["participants_email"]
+    return update_event(id, title, content, start_date, end_date, participants_email)

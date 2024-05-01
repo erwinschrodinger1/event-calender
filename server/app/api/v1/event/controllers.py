@@ -44,3 +44,17 @@ def delete_event(id):
         return "Event Deleted"
     else:
         return "Event Id Doesnot exist"
+
+
+def update_event(id, title, content, start_date, end_date, participants_email):
+    event = Event.query.filter_by(id=id).first()
+    if event:
+        event.title = title
+        event.content = content
+        event.start_date = parse(start_date)
+        event.end_date = parse(end_date)
+        event.participants_email = participants_email
+        db.session.commit()
+        return jsonify({"message": "event updated"})
+
+    return jsonify({"message": "event not found"})

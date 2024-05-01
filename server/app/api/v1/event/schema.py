@@ -1,11 +1,27 @@
+from operator import or_
+from flask import jsonify
 from app.extensions import ma
-from marshmallow import fields
+from marshmallow import ValidationError, fields
 from .models import Event
+from dateutil.parser import parse
 
 
 class EventSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Event
+
+    def validate(self, data, **kwargs):
+        start_date = data.get("start_date")
+        end_date = data.get("end_date")
+        if start_date and end_date:
+            overlapping_events = Event.query.filter(
+                or_(
+                    Event.start_date.between(start_date, end_date),
+                    Event.end_date.between(start_date, end_date),
+                )
+            ).all()
+            if overlapping_events:
+                return {"message": "Event overlaps with existing events"}
 
 
 event_schema = EventSchema()
