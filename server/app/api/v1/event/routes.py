@@ -2,7 +2,13 @@ from http.client import BAD_REQUEST
 from flask import render_template, jsonify, request, Response
 from app.api.v1.event import bp
 from app.api.v1.event.models import Event
-from .schema import event_schema, get_schema, get_detail_schema
+from .schema import (
+    event_schema,
+    get_schema,
+    get_detail_schema,
+    event_update_schema,
+    event_body_schema,
+)
 import json
 from .controllers import (
     create_event,
@@ -58,7 +64,18 @@ def delete(id):
 
 @bp.route("/<int:id>", methods=["PATCH"])
 def update(id):
-    errors = event_schema.validate(request.json)
+    body_errors = event_body_schema.validate(request.json)
+    print(body_errors)
+    if body_errors:
+        return Response(json.dumps(body_errors), BAD_REQUEST)
+
+    errors = event_update_schema.validate(
+        {
+            "id": id,
+            "start_date": request.json["start_date"],
+            "end_date": request.json["end_date"],
+        }
+    )
     if errors:
         return Response(json.dumps(errors), BAD_REQUEST)
 
