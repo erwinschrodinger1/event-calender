@@ -25,6 +25,7 @@ import moment from 'moment'
 import { IconButton } from '@mui/material'
 import { DeleteOutlineRounded } from '@mui/icons-material'
 import { deleteEvent } from './api'
+import toast from 'react-hot-toast'
 
 export function Home() {
 	const {
@@ -121,6 +122,7 @@ export function Home() {
 								sx={{
 									flex: 1,
 									maxHeight: '80vh',
+									minWidth: '350px',
 									overflow: 'scroll',
 								}}
 							>
@@ -234,10 +236,17 @@ export function Home() {
 																		prev.filter(val => val.id != el.id),
 																	)
 																	setEventDates(prev =>
-																		prev.filter(val => val == el.start_date),
+																		prev.filter(
+																			val =>
+																				val.getTime() !=
+																				new Date(el.start_date).getTime(),
+																		),
+																	)
+																	return toast.success(
+																		'Event Sucessfully Removed',
 																	)
 																} catch (e) {
-																	console.log(e)
+																	return toast.error(e.response.data.message)
 																}
 															}}
 														>
@@ -249,9 +258,9 @@ export function Home() {
 														</Typography>
 														<Typography variant='body2'>
 															Time:{' '}
-															{moment(el.start_date).format('hh:mm') +
+															{moment(el.start_date).format('hh:mm A') +
 																' - ' +
-																moment(el.end_date).format('hh:mm')}
+																moment(el.end_date).format('hh:mm A')}
 														</Typography>
 
 														{el.participants_email.map(val => (

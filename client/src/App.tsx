@@ -6,6 +6,7 @@ import CssBaseline from '@mui/material/CssBaseline'
 
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { Toaster } from 'react-hot-toast'
 
 const darkTheme = createTheme({
 	transitions: {
@@ -26,6 +27,7 @@ function App() {
 			<CssBaseline />
 			<LocalizationProvider dateAdapter={AdapterDayjs}>
 				{routeElements}
+				<Toaster />
 			</LocalizationProvider>
 		</ThemeProvider>
 	)

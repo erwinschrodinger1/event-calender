@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { createEvent, getEventDates, getEventDetail, getHolidays } from '../api'
 import { EventResponse } from '../types'
+import { Alert } from '@mui/material'
+import { ErrorOutline } from '@mui/icons-material'
+import toast from 'react-hot-toast'
 
 export const useHome = () => {
 	const [selected, setSelected] = useState<Date>()
@@ -98,9 +101,6 @@ export const useHome = () => {
 					parseInt(data.endTime.split(':')[1]),
 				),
 			)
-
-			console.log(startTime, endTime)
-
 			const response = await createEvent({
 				title: data.title,
 				content: data.content,
@@ -110,8 +110,12 @@ export const useHome = () => {
 			})
 			setEventDates(prev => [...prev, selected])
 			setEvents(events => [...events, response])
+			return toast.success('Event Succesfully created')
 		} catch (err) {
-			console.log(err)
+			if (err.response.data.message) {
+				return toast.error(err.response.data.message)
+			}
+			return toast.error(err.response.message)
 		}
 	}
 
