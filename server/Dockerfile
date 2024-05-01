@@ -11,4 +11,4 @@ COPY . .
 
 EXPOSE 5000
 
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+CMD ["sh", "-c", "rq worker default & python3 -m flask run --host=0.0.0.0"]
