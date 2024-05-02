@@ -6,15 +6,11 @@ services:
       context: ./client
     ports:
       - "5173:5173"
-    networks:
-      - my_network
 
   python:
     build: ./server
     ports:
       - "5000:5000"
-    networks:
-      - my_network
     depends_on:
       - redis
 
@@ -22,9 +18,3 @@ services:
     image: "redis:latest"
     ports:
       - "6379:6379"
-    networks:
-      - my_network
-
-networks:
-  my_network:
-    driver: bridge
